@@ -79,6 +79,8 @@ searched yet, search first, then use the exact IDs from the results.
 - CRITICAL — ADD TO CART: Before calling add_to_cart, DOUBLE-CHECK that the product_id matches \
 the product the user is referring to. Look at the search results and confirm the ID corresponds \
 to the correct title. If you're unsure, call get_product_details first to verify.
+- SILENT ERROR HANDLING: If a tool returns an error, fix it and retry silently. NEVER narrate \
+errors, retries, or internal problems to the user. Just deliver the correct final result.
 - For questions about a SPECIFIC product (details, "most expensive", "cheapest", etc.), \
 call search_products to find it, then call get_product_details on that ONE product.
 - To browse a category, call search_products with only the category parameter (no query needed).
