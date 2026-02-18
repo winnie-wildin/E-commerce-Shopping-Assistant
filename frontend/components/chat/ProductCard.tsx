@@ -30,13 +30,13 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       : null
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-200 group">
+    <Card className="overflow-hidden transition-shadow duration-200 hover:shadow-md">
       {product.image && (
-        <div className="h-40 bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
+        <div className="group/img h-40 bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4 overflow-hidden">
           <img
             src={product.image}
             alt={product.title}
-            className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-200"
+            className="max-h-full max-w-full object-contain group-hover/img:scale-110 transition-transform duration-300"
           />
         </div>
       )}
@@ -64,8 +64,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         {onAddToCart && (
           <Button
             size="sm"
-            className="w-full text-xs rounded-lg"
-            onClick={() => onAddToCart(product.id, product.title)}
+            className="w-full text-xs rounded-lg cursor-pointer shadow-sm bg-primary hover:bg-primary/80 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] active:bg-primary/70 transition-all duration-150"
+            onClick={(e) => { e.stopPropagation(); onAddToCart(product.id, product.title) }}
           >
             <ShoppingCart className="w-3 h-3 mr-1.5" />
             Add to Cart

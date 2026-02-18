@@ -23,6 +23,7 @@ class _ToolContext:
     """
     conversation_id: str = "default"
     user_id: Optional[str] = None
+    last_search_ids: set = set()  # product IDs from the most recent search
 
 
 _context = _ToolContext()
@@ -114,10 +115,12 @@ def search_products(
 
         if not result:
             log.info("  -> No matches after filtering")
+            _context.last_search_ids = set()
             return json.dumps(
                 {"message": "No products found matching your criteria.", "suggestion": "Try browsing by category or broadening your search."}
             )
 
+        _context.last_search_ids = {p["id"] for p in result}
         return json.dumps({"count": len(result), "products": result}, indent=2)
     except Exception as e:
         log.error(f"search_products error: {e}")
@@ -152,21 +155,27 @@ def get_categories() -> str:
 def get_product_details(product_id: int) -> str:
     """
     Get detailed information about a specific product by its ID.
+    IMPORTANT: Only use product IDs returned by a previous search_products call.
 
     Args:
-        product_id: The ID of the product to retrieve details for
+        product_id: The ID of the product to retrieve details for (must come from search results)
 
     Returns:
         JSON string with complete product information
     """
     try:
+        if _context.last_search_ids and product_id not in _context.last_search_ids:
+            log.warning(
+                f"get_product_details called with id={product_id} which was NOT in last search results {_context.last_search_ids}"
+            )
+
         from app.services.vector_store import get_vector_store
         
         store = get_vector_store()
         if store and store.is_ready:
             product = store.get_product_by_id(product_id)
             if not product:
-                return json.dumps({"error": f"Product #{product_id} not found."})
+                return json.dumps({"error": f"Product #{product_id} not found. Use an ID from search_products results."})
         else:
             client = get_fakestore_client()
             product = run_async(client.get_product_by_id(product_id))

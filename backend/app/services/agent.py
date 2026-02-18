@@ -70,10 +70,12 @@ IMPORTANT tool-calling rules:
 Feel free to use natural language queries like "something for a party" or "affordable tech gadgets".
 - search_products results are DISPLAYED as visual product cards to the user. \
 Only call it when you actually want the user to browse a LIST of products.
-- RECOMMENDATION RULE: When you want to recommend ONE or TWO specific products (e.g. "something for a movie lover", \
-"best gift for …"), ALWAYS call get_product_details on the product(s) you want to recommend AFTER searching. \
-The detail card replaces the search cards, so the user only sees your pick — not the full search results. \
+- RECOMMENDATION RULE: When recommending specific products, call get_product_details on each \
+product you want to highlight AFTER searching. Each detail card is shown alongside your text. \
 NEVER just describe a product in text if you can show its detail card instead.
+- CRITICAL — PRODUCT IDs: You MUST only use product IDs that were returned by a previous \
+search_products call in the SAME conversation turn. NEVER guess, assume, or recall product IDs \
+from memory. If you haven't searched yet, search first, then use the exact IDs from the results.
 - For questions about a SPECIFIC product (details, "most expensive", "cheapest", etc.), \
 call search_products to find it, then call get_product_details on that ONE product.
 - To browse a category, call search_products with only the category parameter (no query needed).
@@ -178,6 +180,7 @@ class ShoppingAgent:
         import app.tools.shopping_tools as shopping_tools_module
         shopping_tools_module._context.conversation_id = conversation_id
         shopping_tools_module._context.user_id = user_id
+        shopping_tools_module._context.last_search_ids = set()
 
         # Build message list from history
         chat_history: list[AnyMessage] = []

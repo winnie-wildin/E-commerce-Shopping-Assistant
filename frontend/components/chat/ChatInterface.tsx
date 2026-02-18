@@ -60,10 +60,13 @@ export function ChatInterface() {
             case "products":
               updated = { ...last, products: [...(last.products || []), ...(event.data || [])], toolActivity: null }
               break
-            case "product_detail":
-              // Replace any previous search results — the detail view is what the user wanted
-              updated = { ...last, products: [event.data], toolActivity: null }
+            case "product_detail": {
+              // Keep previous detail cards (have description), drop search-only cards, deduplicate by ID
+              const prevDetails = (last.products || []).filter((p: Product) => !!p.description)
+              const deduped = prevDetails.filter((p: Product) => p.id !== event.data?.id)
+              updated = { ...last, products: [...deduped, event.data], toolActivity: null }
               break
+            }
             case "cart":
               updated = { ...last, cart: event.data as CartData, toolActivity: null }
               break
