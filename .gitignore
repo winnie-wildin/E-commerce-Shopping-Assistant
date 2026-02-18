@@ -1,0 +1,38 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/.env
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/data/
+
+# Node
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env*.local
+
+# Assignment / planning (not part of deliverable)
+plan.md
+Senior Full Stack AI Engineer - Technical Assignment.pdf
+EXAMPLE_CONVERSATIONS.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
