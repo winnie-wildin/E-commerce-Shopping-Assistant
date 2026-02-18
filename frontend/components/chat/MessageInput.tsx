@@ -42,7 +42,9 @@ export function MessageInput({ onSend, isLoading }: MessageInputProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-3 sm:p-4 border-t border-border bg-card">
+    <form onSubmit={handleSubmit} className="relative p-3 sm:p-4 bg-card shrink-0">
+      {/* Gradient border accent */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       <div className="flex items-end gap-2 max-w-3xl mx-auto">
         <textarea
           ref={textareaRef}
@@ -52,7 +54,7 @@ export function MessageInput({ onSend, isLoading }: MessageInputProps) {
           placeholder="Ask about products, compare items, manage your cart..."
           disabled={isLoading}
           rows={1}
-          className="flex-1 resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+          className="flex-1 resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary/30 disabled:opacity-50 transition-shadow"
         />
         <Button
           type="submit"

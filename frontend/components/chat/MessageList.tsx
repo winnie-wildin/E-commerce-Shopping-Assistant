@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState, ReactNode } from "react"
 import { ProductCard, Product } from "./ProductCard"
-import { Bot, User, ShoppingBag, ShoppingCart, ChevronDown, ChevronUp, Package } from "lucide-react"
+import { Bot, User, ShoppingBag, ShoppingCart, ChevronDown, ChevronUp, Package, Sparkles, Search, Tag } from "lucide-react"
 
 export interface CartItem {
   product_id: number
@@ -39,9 +39,9 @@ interface MessageListProps {
 }
 
 const SUGGESTIONS = [
-  "Show me electronics",
-  "What categories do you have?",
-  "Find me jewelry under $100",
+  { text: "Show me electronics", icon: Search },
+  { text: "What categories do you have?", icon: Tag },
+  { text: "Find me jewelry under $100", icon: Sparkles },
 ]
 
 export function MessageList({ messages, isLoading, onAddToCart, onSuggestionClick }: MessageListProps) {
@@ -68,21 +68,24 @@ export function MessageList({ messages, isLoading, onAddToCart, onSuggestionClic
   if (messages.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-5 shadow-sm">
           <ShoppingBag className="w-8 h-8 text-primary" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">Welcome to Shopping Assistant</h2>
-        <p className="text-muted-foreground max-w-md mb-6">
-          I can help you discover products, compare items, and manage your cart. Try asking:
+        <h2 className="text-2xl font-bold mb-2 tracking-tight">Shopping Assistant</h2>
+        <p className="text-muted-foreground max-w-sm mb-8">
+          Discover products, compare items, and manage your cart — all through conversation.
         </p>
-        <div className="flex flex-col gap-2 text-sm">
-          {SUGGESTIONS.map(s => (
+        <div className="flex flex-col gap-2.5 text-sm w-full max-w-xs">
+          {SUGGESTIONS.map(({ text, icon: Icon }) => (
             <button
-              key={s}
-              onClick={() => onSuggestionClick(s)}
-              className="px-4 py-2.5 rounded-full bg-secondary text-secondary-foreground hover:bg-accent transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
+              key={text}
+              onClick={() => onSuggestionClick(text)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-card hover:bg-accent/50 hover:border-primary/30 transition-all text-left cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              &ldquo;{s}&rdquo;
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <Icon className="w-4 h-4 text-primary" />
+              </div>
+              <span className="text-secondary-foreground">{text}</span>
             </button>
           ))}
         </div>
@@ -91,15 +94,15 @@ export function MessageList({ messages, isLoading, onAddToCart, onSuggestionClic
   }
 
   return (
-    <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto p-4 space-y-4 bg-[radial-gradient(circle_at_1px_1px,var(--border)_1px,transparent_0)] [background-size:24px_24px]">
       {messages.map(msg => (
         <div
           key={msg.id}
-          className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+          className={`max-w-3xl mx-auto flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
         >
           {/* Assistant avatar */}
           {msg.role === "assistant" && (
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mt-1">
+            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mt-1">
               <Bot className="w-4 h-4 text-primary" />
             </div>
           )}
@@ -285,36 +288,38 @@ function TypingIndicator() {
 function CartDisplay({ cart }: { cart: CartData }) {
   if (cart.message && (!cart.items || cart.items.length === 0)) {
     return (
-      <div className="mt-2 p-3 rounded-lg bg-secondary/50 text-sm border border-border">
+      <div className="mt-2 p-3 rounded-xl bg-secondary/50 text-sm border border-border">
         {cart.message}
       </div>
     )
   }
 
   return (
-    <div className="mt-3 rounded-lg border border-border overflow-hidden shadow-sm">
-      <div className="px-4 py-2.5 bg-secondary/50 font-medium text-sm flex items-center gap-2">
-        <ShoppingCart className="w-4 h-4" />
+    <div className="mt-3 rounded-xl border border-border overflow-hidden shadow-sm bg-card">
+      <div className="px-4 py-3 bg-gradient-to-r from-primary/5 to-transparent font-medium text-sm flex items-center gap-2">
+        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <ShoppingCart className="w-3.5 h-3.5 text-primary" />
+        </div>
         Shopping Cart
         {cart.item_count !== undefined && (
-          <span className="ml-auto text-xs text-muted-foreground">
+          <span className="ml-auto text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
             {cart.item_count} item{cart.item_count !== 1 ? "s" : ""}
           </span>
         )}
       </div>
       {cart.items?.map((item, i) => (
-        <div key={i} className="px-4 py-2.5 border-t border-border flex justify-between text-sm">
-          <div>
-            <span className="font-medium">{item.title}</span>
-            <span className="text-muted-foreground ml-2">x{item.quantity}</span>
+        <div key={i} className="px-4 py-3 border-t border-border flex items-center justify-between gap-4 text-sm">
+          <div className="min-w-0">
+            <span className="font-medium line-clamp-1">{item.title}</span>
+            <span className="text-muted-foreground text-xs ml-1">×{item.quantity}</span>
           </div>
-          <span className="font-medium">${item.subtotal.toFixed(2)}</span>
+          <span className="font-semibold tabular-nums shrink-0">${item.subtotal.toFixed(2)}</span>
         </div>
       ))}
       {cart.total !== undefined && (
-        <div className="px-4 py-2.5 border-t border-border bg-primary/5 flex justify-between font-semibold text-sm">
+        <div className="px-4 py-3 border-t-2 border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 flex justify-between font-bold text-sm">
           <span>Total</span>
-          <span className="text-primary">${cart.total.toFixed(2)}</span>
+          <span className="text-primary text-base">${cart.total.toFixed(2)}</span>
         </div>
       )}
     </div>

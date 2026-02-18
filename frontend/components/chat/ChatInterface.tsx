@@ -105,17 +105,19 @@ export function ChatInterface() {
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <header className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border bg-card shadow-sm shrink-0">
+      <header className="relative flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 bg-card shrink-0">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
+          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5">
             <ShoppingBag className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-foreground">Shopping Assistant</h1>
+            <h1 className="text-lg font-bold text-foreground tracking-tight">Shopping Assistant</h1>
             <p className="text-xs text-muted-foreground">AI-powered product discovery</p>
           </div>
         </div>
         <AuthButton />
+        {/* Gradient border accent */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       </header>
 
       {/* Messages */}
