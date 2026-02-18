@@ -74,8 +74,11 @@ Only call it when you actually want the user to browse a LIST of products.
 product you want to highlight AFTER searching. Each detail card is shown alongside your text. \
 NEVER just describe a product in text if you can show its detail card instead.
 - CRITICAL — PRODUCT IDs: You MUST only use product IDs that were returned by a previous \
-search_products call in the SAME conversation turn. NEVER guess, assume, or recall product IDs \
-from memory. If you haven't searched yet, search first, then use the exact IDs from the results.
+search_products call. NEVER guess, assume, or recall product IDs from memory. If you haven't \
+searched yet, search first, then use the exact IDs from the results.
+- CRITICAL — ADD TO CART: Before calling add_to_cart, DOUBLE-CHECK that the product_id matches \
+the product the user is referring to. Look at the search results and confirm the ID corresponds \
+to the correct title. If you're unsure, call get_product_details first to verify.
 - For questions about a SPECIFIC product (details, "most expensive", "cheapest", etc.), \
 call search_products to find it, then call get_product_details on that ONE product.
 - To browse a category, call search_products with only the category parameter (no query needed).
@@ -180,7 +183,9 @@ class ShoppingAgent:
         import app.tools.shopping_tools as shopping_tools_module
         shopping_tools_module._context.conversation_id = conversation_id
         shopping_tools_module._context.user_id = user_id
-        shopping_tools_module._context.last_search_ids = set()
+        # Don't reset last_search_ids — it persists across turns so add_to_cart
+        # can validate IDs even when the search happened in a previous turn.
+        # It refreshes automatically whenever search_products runs.
 
         # Build message list from history
         chat_history: list[AnyMessage] = []

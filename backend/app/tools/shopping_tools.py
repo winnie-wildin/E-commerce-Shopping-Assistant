@@ -166,8 +166,13 @@ def get_product_details(product_id: int) -> str:
     try:
         if _context.last_search_ids and product_id not in _context.last_search_ids:
             log.warning(
-                f"get_product_details called with id={product_id} which was NOT in last search results {_context.last_search_ids}"
+                f"get_product_details blocked: id={product_id} not in last search results {_context.last_search_ids}"
             )
+            return json.dumps({
+                "error": f"Product #{product_id} was not in your recent search results. "
+                         f"Use an exact ID from search_products results. "
+                         f"Valid IDs: {sorted(_context.last_search_ids)}"
+            })
 
         from app.services.vector_store import get_vector_store
         
@@ -259,6 +264,17 @@ def add_to_cart(product_id: int, quantity: int = 1) -> str:
     try:
         if quantity < 1:
             return json.dumps({"error": "Quantity must be at least 1."})
+
+        # Reject IDs the LLM hallucinated (not from a recent search)
+        if _context.last_search_ids and product_id not in _context.last_search_ids:
+            log.warning(
+                f"add_to_cart blocked: product_id={product_id} not in last search results {_context.last_search_ids}"
+            )
+            return json.dumps({
+                "error": f"Product #{product_id} was not in your recent search results. "
+                         f"Call search_products first, then use an exact ID from those results. "
+                         f"Valid IDs from last search: {sorted(_context.last_search_ids)}"
+            })
 
         # Validate product exists
         from app.services.vector_store import get_vector_store
