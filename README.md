@@ -45,7 +45,7 @@ docker-compose.yml
 
 ## Agent Design
 
-Two-node LangGraph `StateGraph`: an LLM node (GPT-4 Turbo with 6 bound tools) and a `ToolNode` for execution. After each LLM turn, a conditional edge checks for tool calls. If present, execute and loop back; otherwise, terminate. Responses stream as structured SSE events (`tool_start`, `products`, `token`, `cart`) so the frontend renders product cards and cart state incrementally instead of waiting for the full response.
+Two-node LangGraph `StateGraph`: an LLM node (GPT-4 Turbo with 6 bound tools) and a `ToolNode` for execution. After each LLM turn, a conditional edge checks for tool calls. If present, execute and loop back; otherwise, terminate. Responses stream as structured SSE events (`tool_start`, `products`, `product_detail`, `cart`, `token`) so the frontend renders product cards, detail cards, and cart state incrementally instead of waiting for the full response.
 
 ```
 START -> agent (LLM) -> tool_calls? --yes--> tools -> agent (loop)
@@ -64,7 +64,7 @@ START -> agent (LLM) -> tool_calls? --yes--> tools -> agent (loop)
 
 **Cart scoped to user ID or conversation ID.** Authenticated users (Google OAuth) get carts tied to their email, persistent across sessions and restarts. Anonymous users get carts scoped to conversation UUID, which keeps things stateless from the frontend's perspective while still persisting across tool calls within a session.
 
-**SSE streaming.** Structured JSON events (`tool_start`, `products`, `token`, `cart`) let the frontend distinguish tool activity from LLM tokens without heuristics.
+**SSE streaming.** Structured JSON events (`tool_start`, `products`, `product_detail`, `cart`, `token`) let the frontend distinguish tool activity from LLM tokens without heuristics.
 
 ### What I'd Change at Scale
 
@@ -96,6 +96,8 @@ Response is an SSE stream:
 ```
 data: {"type": "tool_start", "tool": "search_products"}
 data: {"type": "products", "data": [...]}
+data: {"type": "product_detail", "data": {...}}
+data: {"type": "cart", "data": {"items": [...], "total": 99.99}}
 data: {"type": "token", "content": "Here are..."}
 data: [DONE]
 ```
